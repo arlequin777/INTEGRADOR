@@ -5,6 +5,9 @@ from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .tokens import CustomTokenObtainPairSerializer
+from rest_framework import generics, permissions
+from .models import CustomUser
+from .serializers import UserCreateSerializer, UserSerializer
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
@@ -52,3 +55,14 @@ class OperatorLoginView(APIView):
 
         return Response({"detail": "Este usuario no es un Operador o las credenciales son inválidas"},
                         status=status.HTTP_401_UNAUTHORIZED)
+    
+class UserCreateView(generics.CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserCreateSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+class UserUpdateRoleView(generics.UpdateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
+    lookup_field = "id"
