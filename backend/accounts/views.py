@@ -7,7 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .tokens import CustomTokenObtainPairSerializer
 from rest_framework import generics, permissions
 from .models import CustomUser
-from .serializers import UserCreateSerializer, UserSerializer
+from .serializers import UserCreateSerializer, UserRoleUpdateSerializer, CustomTokenObtainPairSerializer
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
@@ -61,8 +61,7 @@ class UserCreateView(generics.CreateAPIView):
     serializer_class = UserCreateSerializer
     permission_classes = [permissions.IsAdminUser]
 
-class UserUpdateRoleView(generics.UpdateAPIView):
+class UserRoleUpdateView(generics.UpdateAPIView):
     queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserRoleUpdateSerializer
     permission_classes = [permissions.IsAdminUser]
-    lookup_field = "id"

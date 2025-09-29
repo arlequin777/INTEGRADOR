@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import CustomUser, Rol
+from .models import CustomUser
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,17 +33,12 @@ class UserRoleUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Rol inválido.")
         return value
 
-class RolSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Rol
-        fields = ["id", "nombre"]
 
-class UserSerializer(serializers.ModelSerializer):
-    rol = RolSerializer(read_only=True)
-    rol_id = serializers.PrimaryKeyRelatedField(
-        queryset=Rol.objects.all(), source="rol", write_only=True, required=False
-    )
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
 
-    class Meta:
-        model = CustomUser
-        fields = ["id", "nombre", "email", "rol", "rol_id", "fecha_creacion"]
+        data['email'] = self.user.email
+        data['password'] = attrs.get('password')
+
+        return data
